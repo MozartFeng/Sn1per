@@ -181,7 +181,7 @@ if [[ "$MODE" = "webporthttps" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING PASSIVE WEB SPIDER $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2019-51-index?url=*.$TARGET&output=json" | jq -r .url | egrep -v "null" | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null | head -n 250
+      curl -sX GET "http://index.commoncrawl.org/CC-MAIN-2022-33-index?url=*.$TARGET&output=json" -H 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Safari/537.36' 2> /dev/null | jq -r .url | egrep -v "null" | tee $LOOT_DIR/web/passivespider-$TARGET.txt 2> /dev/null | head -n 250
     fi
     if [[ "$WAYBACKMACHINE" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
@@ -193,9 +193,9 @@ if [[ "$MODE" = "webporthttps" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED FETCHING HACKERTARGET URLS $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      curl -s GET "https://api.hackertarget.com/pagelinks/?q=https://$TARGET" | egrep -v "API count|no links found|input url is invalid|API count|no links found|input url is invalid" | tee $LOOT_DIR/web/hackertarget-https-$TARGET.txt 2> /dev/null | head -n 250
+      curl -s GET "https://api.hackertarget.com/pagelinks/?q=https://$TARGET" | egrep -v "API count|no links found|input url is invalid|API count|no links found|input url is invalid|error getting links" | tee $LOOT_DIR/web/hackertarget-https-$TARGET.txt 2> /dev/null | head -n 250
     fi
-    if [[ "$GUA" == "1" ]]; then
+    if [[ "$GAU" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED FETCHING GUA URLS $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
@@ -334,14 +334,14 @@ if [[ "$MODE" = "webporthttps" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING SHELLSHOCK EXPLOIT SCAN $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      python $PLUGINS_DIR/shocker/shocker.py -H $TARGET --cgilist $PLUGINS_DIR/shocker/shocker-cgi_list --sVl --port ${PORT} | tee $LOOT_DIR/web/shocker-$TARGET-port${PORT}.txt
+      python3 $PLUGINS_DIR/shocker/shocker.py -H $TARGET --cgilist $PLUGINS_DIR/shocker/shocker-cgi_list --sVl --port ${PORT} | tee $LOOT_DIR/web/shocker-$TARGET-port${PORT}.txt
     fi
     if [[ "$JEXBOSS" == "1" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING JEXBOSS $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       cd /tmp/
-      python /usr/share/sniper/plugins/jexboss/jexboss.py -u https://$TARGET:${PORT} | tee $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw
+      python3 /usr/share/sniper/plugins/jexboss/jexboss.py -u https://$TARGET:${PORT} | tee $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw
       sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g" $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw > $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.txt 2> /dev/null
       rm -f $LOOT_DIR/web/jexboss-$TARGET-port${PORT}.raw 2> /dev/null
       cd $INSTALL_DIR
@@ -356,7 +356,7 @@ if [[ "$MODE" = "webporthttps" ]]; then
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
       echo -e "$OKRED RUNNING NUCLEI SCAN $RESET"
       echo -e "${OKGREEN}====================================================================================${RESET}•x${OKGREEN}[`date +"%Y-%m-%d](%H:%M)"`${RESET}x•"
-      nuclei -silent -t /usr/share/sniper/plugins/nuclei-templates/ -c $THREADS -target https://$TARGET:${PORT} -o $LOOT_DIR/web/nuclei-https-${TARGET}-port${PORT}.txt 
+      nuclei -silent -t /root/nuclei-templates/ -c $THREADS -target https://$TARGET:${PORT} -o $LOOT_DIR/web/nuclei-https-${TARGET}-port${PORT}.txt
     fi
     cd $INSTALL_DIR
     SSL="true"

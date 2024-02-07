@@ -71,53 +71,54 @@ if [[ $UBUNTU_CHECK == "DISTRIB_ID=Ubuntu" ]]; then
 fi
 
 echo -e "$OKBLUE[*]$RESET Installing package dependencies...$RESET"
-apt-get update
-apt-get install -y python3-paramiko
-apt-get install -y nfs-common
-apt-get install -y nodejs
-apt-get install -y wafw00f
-apt-get install -y xdg-utils
-apt-get install -y ruby
-apt-get install -y rubygems
-apt-get install -y python
-apt-get install -y dos2unix
-apt-get install -y aha
-apt-get install -y libxml2-utils
-apt-get install -y rpcbind
-apt-get install -y cutycapt
-apt-get install -y host
-apt-get install -y whois
-apt-get install -y dnsrecon
-apt-get install -y curl
-apt-get install -y nmap
-apt-get install -y php7.4
-apt-get install -y php7.4-curl
-apt-get install -y hydra
-apt-get install -y sqlmap
-apt-get install -y nbtscan
-apt-get install -y nikto
-apt-get install -y whatweb
-apt-get install -y sslscan
-apt-get install -y jq
-apt-get install -y golang
-apt-get install -y adb
-apt-get install -y xsltproc
-apt-get install -y ldapscripts
-apt-get install -y libssl-dev 2> /dev/null
-apt-get install -y python-pip 2> /dev/null
-apt-get remove -y python3-pip
-apt-get install -y python3-pip
-apt-get install -y xmlstarlet
-apt-get install -y net-tools
-apt-get install -y p7zip-full
-apt-get install -y jsbeautifier
-apt-get install -y theharvester 2> /dev/null
-apt-get install -y phantomjs 2> /dev/null
-apt-get install -y chromium 2> /dev/null
-apt-get install -y xvfb
-apt-get install -y urlcrazy
-apt-get install -y iputils-ping
-apt-get install -y enum4linux
+apt update
+apt install -y python3-paramiko
+apt install -y nfs-common
+apt install -y nodejs
+apt install -y wafw00f
+apt install -y xdg-utils
+apt install -y ruby
+apt install -y rubygems
+apt install -y python
+apt install -y dos2unix
+apt install -y aha
+apt install -y libxml2-utils
+apt install -y rpcbind
+apt install -y cutycapt
+apt install -y host
+apt install -y whois
+apt install -y dnsrecon
+apt install -y curl
+apt install -y nmap
+apt install -y php7.4
+apt install -y php7.4-curl
+apt install -y hydra
+apt install -y sqlmap
+apt install -y nbtscan
+apt install -y nikto
+apt install -y whatweb
+apt install -y sslscan
+apt install -y jq
+apt install -y golang
+apt install -y adb
+apt install -y xsltproc
+apt install -y ldapscripts
+apt install -y libssl-dev 2> /dev/null
+apt install -y python-pip 2> /dev/null
+apt purge -y python3-pip
+apt install -y python3-pip
+apt install -y xmlstarlet
+apt install -y net-tools
+apt install -y p7zip-full
+apt install -y jsbeautifier
+apt install -y theharvester 2> /dev/null
+apt install -y phantomjs 2> /dev/null
+apt install -y chromium 2> /dev/null
+apt install -y xvfb
+apt install -y urlcrazy
+apt install -y iputils-ping
+apt install -y enum4linux
+apt install -y dnsutils
 
 echo -e "$OKBLUE[*]$RESET Installing Metasploit...$RESET"
 curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > /tmp/msfinstall
@@ -137,6 +138,9 @@ gem install public_suffix 2> /dev/null > /dev/null
 
 echo -e "$OKBLUE[*]$RESET Setting up Ruby...$RESET"
 dpkg-reconfigure ruby
+
+echo -e "$OKBLUE[*]$RESET Upgrading Pip...$RESET"
+python3 -m pip install --upgrade pip
 
 echo -e "$OKBLUE[*]$RESET Cleaning up old extensions...$RESET"
 rm -Rf $PLUGINS_DIR 2> /dev/null
@@ -192,7 +196,14 @@ git clone https://github.com/defparam/smuggler.git
 
 # DIRSEARCH INSTALLER
 echo -e "$OKBLUE[*]$RESET Installing Dirsearch...$RESET"
-git clone https://github.com/maurosoria/dirsearch.git
+cd $PLUGINS_DIR
+rm -Rf dirsearch/ 2> /dev/null
+wget https://github.com/maurosoria/dirsearch/archive/refs/tags/v0.4.2.tar.gz
+tar -zxvf v0.4.2.tar.gz
+mv dirsearch-0.4.2/ dirsearch/
+cd dirsearch/
+pip3 install -r requirements.txt
+cd $PLUGINS_DIR
 
 # SECRETFINDER INSTALLER
 echo -e "$OKBLUE[*]$RESET Installing SecretFinder...$RESET"
@@ -247,22 +258,10 @@ cd ..
 
 # NUCLEI UPDATES
 echo -e "$OKBLUE[*]$RESET Installing Nuclei...$RESET"
-go install -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
-if [ ! -f "/root/go/bin/nuclei" ]; then
-	wget https://github.com/projectdiscovery/nuclei/releases/download/v2.3.7/nuclei_2.3.7_linux_amd64.tar.gz -O /tmp/nuclei.tar.gz
-	cd /tmp
-	tar -zxvf /tmp/nuclei.tar.gz
-	mv nuclei /root/go/bin/nuclei
-	cd $INSTALL_DIR
-fi
-ln -fs /root/go/bin/nuclei /usr/local/bin/nuclei 
-
-# NUCLEI TEMPLATES UPDATE
-echo -e "$OKBLUE[*]$RESET Installing Nuclei Templates...$RESET"
-cd $PLUGINS_DIR
-rm -Rf nuclei-templates
-git clone https://github.com/projectdiscovery/nuclei-templates.git
-nuclei -update-directory /usr/share/sniper/plugins/nuclei-templates/ -update-templates
+GO111MODULE=on go install github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+ln -fs /root/go/bin/nuclei /usr/local/bin/nuclei 2> /dev/null
+nuclei --update
+nuclei
 
 # INSTALL WEBTECH
 echo -e "$OKBLUE[*]$RESET Installing WebTech...$RESET"
@@ -286,10 +285,9 @@ go install github.com/harleo/asnip@latest; ln -fs ~/go/bin/asnip /usr/bin/asnip
 
 # GAU INSTALLER
 echo -e "$OKBLUE[*]$RESET Installing GAU...$RESET"
-go install github.com/lc/gau@latest
+GO111MODULE=on go install github.com/lc/gau@latest
 rm -f /usr/bin/gau 2> /dev/null
-ln -fs /root/go/bin/gau /usr/bin/gau
-ln -fs /root/go/bin/gau /usr/bin/gau2
+ln -fs /root/go/bin/gau /usr/bin/gau 2> /dev/null
 
 # INSTALL HTTPX
 echo -e "$OKBLUE[*]$RESET Installing HTTPX...$RESET"

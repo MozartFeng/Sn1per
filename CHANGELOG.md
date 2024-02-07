@@ -1,4 +1,18 @@
 ## CHANGELOG:
+* v9.2 - Added Tomba.io API integration via OSINT mode (Credit: @benemohamed)
+* v9.2 - Fixed issue with gau tool not installing and updated GAU setting in confs
+* v9.2 - Updated python2 to python3
+* v9.2 - Removed Slurp tool
+* v9.2 - Added BlackArch Dockerfile (Credit: @AnonymousWP)
+* v9.2 - Updated DockerFile to latest Kali release (Credit: @AnonymousWP)
+* v9.1 - Fixed issue with dirsearch installation/command syntax update
+* v9.1 - Updated Nuclei sc0pe templates
+* v9.1 - Fixed issue with Nuclei sc0pe parsers not working
+* v9.1 - Fixed issue with GAU installer/commmand not working
+* v9.1 - Fixed issue with passive URL fetching 
+* v9.1 - Fixed issue with nuclei not being installed
+* v9.1 - Removed error in hackertarget URL fetching
+* v9.1 - Added dnsutils to installer to fix missing deps
 * v9.1 - Fixed issue with gau in webscan modes not running
 * v9.1 - Updated subfinder to latest version
 * v9.1 - Added new email spoofing security checks to OSINT mode (-o)
